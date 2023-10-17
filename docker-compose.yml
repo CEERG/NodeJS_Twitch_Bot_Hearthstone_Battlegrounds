@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: ./Dockerfile
+    container_name: bot
+    hostname: bot
+    volumes:
+      - ./repository:/bot
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  data_collector:
+    build:
+      context: ./data_collector
+      dockerfile: ./Dockerfile
+    container_name: data_collector
+    hostname: data_collector
+    volumes:
+      - ./repository:/data_collector
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  npm_install:
+    build:
+      context: ./npm_install
+      dockerfile: ./Dockerfile
+    container_name: npm_install
+    hostname: npm_install
+    volumes:
+      - ./repository:/npm_install
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  redis:
+    build:
+      context: ./redis
+      dockerfile: ./Dockerfile
+    container_name: redis
+    hostname: redis
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"

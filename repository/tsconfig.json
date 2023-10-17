@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "es6",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "baseUrl": "src",
+    "paths": {
+      "data_collector/*": ["data_collector/*"],
+    },
+  },
+  "lib": ["es2015"]
+}

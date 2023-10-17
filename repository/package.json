@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "ts-node": "^10",
+    "@types/tmi.js": "^1",
+    "tmi.js": "^1",
+    "redis": "^4",
+    "dotenv": "^16",
+    "axios": "^1",
+    "dayjs": "^1"
+  }
+}
