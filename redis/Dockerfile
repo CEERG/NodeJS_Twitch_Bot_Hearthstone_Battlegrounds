@@ -1,3 +1,3 @@
 FROM redis:7
 
-ENTRYPOINT redis-server
+ENTRYPOINT ["redis-server"]

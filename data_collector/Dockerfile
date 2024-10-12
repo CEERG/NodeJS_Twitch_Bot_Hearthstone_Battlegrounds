@@ -1,7 +1,7 @@
 FROM node:20
 
-RUN npm install pm2 -g
+RUN npm install ts-node nodemon -g
 
 WORKDIR /data_collector
 
-ENTRYPOINT pm2 start data_collector.ts --watch --attach --interpreter=./node_modules/.bin/ts-node
+ENTRYPOINT ["nodemon", "data_collector.ts"]
