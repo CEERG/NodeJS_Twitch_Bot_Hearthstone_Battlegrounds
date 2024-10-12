@@ -2,14 +2,16 @@ import tmi, { ChatUserstate, Client } from 'tmi.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-import LeaderRepository from '../leader_repository/LeaderRepository';
+import LeaderRepositoryByName from '../leader_repository/LeaderRepositoryByName';
+import LeaderRepositoryByRank from '../leader_repository/LeaderRepositoryByRank';
 
 require('dotenv').config();
 dayjs.extend(relativeTime);
 
 class Bot {
   client: Client;
-  leaderRepository: LeaderRepository;
+  leaderRepositoryByName: LeaderRepositoryByName;
+  leaderRepositoryByRank: LeaderRepositoryByRank;
 
   constructor() {
     // Create a client with our options
@@ -25,7 +27,8 @@ class Bot {
     this.client.on('message', this.onMessageHandler.bind(this));
     this.client.on('connected', this.onConnectedHandler.bind(this));
 
-    this.leaderRepository = new LeaderRepository();
+    this.leaderRepositoryByName = new LeaderRepositoryByName();
+    this.leaderRepositoryByRank = new LeaderRepositoryByRank();
   }
 
   start() {
@@ -49,20 +52,24 @@ class Bot {
         break;
 
       case '!bgrank':
-        let name = param?.trim();
+        let searchString = param?.trim();
 
-        if (!name) {
+        if (!searchString) {
           this.client.say(channel, `@${tags.username} specify player.`)
 
           break;
         }
 
-        const leader = await this.leaderRepository.findLeaderByName(name);
+        if (Number(searchString)) {
+          var leader = await this.leaderRepositoryByRank.findLeaderByRank(Number(searchString));
+        } else {
+          var leader = await this.leaderRepositoryByName.findLeaderByName(searchString);
+        }
 
         if (leader === null) {
-          this.client.say(channel, `@${tags.username} player not found.`)
+          this.client.say(channel, `@${ tags.username } player not found.`)
         } else {
-          this.client.say(channel, `@${tags.username} Player ${leader.accountid} is rank ${leader.rank} with ${leader.rating} mmr (updated ${dayjs(Number(leader.lastUpdateTimestamp)).fromNow()}).`)
+          this.client.say(channel, `@${ tags.username } Player ${ leader.accountid } is rank ${ leader.rank } with ${ leader.rating } mmr (updated ${ dayjs(Number(leader.lastUpdateTimestamp)).fromNow() }).`)
         }
 
         break;

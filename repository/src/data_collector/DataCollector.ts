@@ -1,16 +1,19 @@
 import { convertLeaderFromApi } from "../converter/converter";
 import HearthstoneGateway from "../hearthstone_gateway/HearthstoneGateway";
-import LeaderRepository from "../leader_repository/LeaderRepository";
+import LeaderRepositoryByName from '../leader_repository/LeaderRepositoryByName';
+import LeaderRepositoryByRank from '../leader_repository/LeaderRepositoryByRank';
 
 require('dotenv').config();
 
 class DataCollector {
   private hearthstoneGateway: HearthstoneGateway;
-  private leaderRepository: LeaderRepository;
+  private leaderRepositoryByName: LeaderRepositoryByName;
+  private leaderRepositoryByRank: LeaderRepositoryByRank;
 
   constructor() {
     this.hearthstoneGateway = new HearthstoneGateway();
-    this.leaderRepository = new LeaderRepository();
+		this.leaderRepositoryByName = new LeaderRepositoryByName();
+    this.leaderRepositoryByRank = new LeaderRepositoryByRank();
   }
 
   async start() {
@@ -68,9 +71,10 @@ class DataCollector {
 
     const leaders = leaderboardPage.leaderboard.rows;
 
-    const leadersSaved = leaders.map(leader => this.leaderRepository.save(convertLeaderFromApi(leader)));
+    const leadersSavedByName = Promise.all(leaders.map(leader => this.leaderRepositoryByName.save(convertLeaderFromApi(leader), leader.accountid)));
+		const leadersSavedByRank = Promise.all(leaders.map(leader => this.leaderRepositoryByRank.save(convertLeaderFromApi(leader), leader.rank)));
 
-    return Promise.all(leadersSaved);
+    return Promise.all([leadersSavedByName, leadersSavedByRank]);
   }
 }
 

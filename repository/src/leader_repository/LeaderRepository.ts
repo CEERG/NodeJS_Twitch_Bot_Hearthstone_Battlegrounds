@@ -2,19 +2,27 @@ import Leader from './Leader';
 import { converLeaderFromRaw } from '../converter/converter';
 import RedisStorage from './RedisStorage';
 
-class LeaderRepository {
+abstract class LeaderRepository<KeyType> {
   private storage: RedisStorage<Leader>;
 
   constructor() {
     this.storage = new RedisStorage();
   }
 
-  save(leader: Leader) {
-    return this.storage.put(LeaderRepository.leaderKey(leader.accountid), leader);
+  abstract formatKeyToString(key: KeyType): string;
+
+  abstract getLeaderboardDatabase(): string;
+
+  save(leader: Leader, keyString: KeyType) {
+    const key = this.leaderKey(keyString);
+
+    return this.storage.put(key, leader);
   }
 
-  async findLeaderByName(name: string): Promise<Leader | null> {
-    const data = await this.storage.get(LeaderRepository.leaderKey(name));
+  async find(keyString: KeyType) {
+    const key = this.leaderKey(keyString);
+
+    const data = await this.storage.get(key);
 
     if (data === null)
       return null;
@@ -22,8 +30,8 @@ class LeaderRepository {
     return converLeaderFromRaw(data);
   }
 
-  private static leaderKey(name: string): string {
-    return process.env.redis_leaderboard_database + ':' + name.toLowerCase();
+  private leaderKey(keyString: KeyType): string {
+    return this.getLeaderboardDatabase() + ':' + this.formatKeyToString(keyString);
   }
 }
 
