@@ -51,8 +51,6 @@ class Bot {
       case '!bgrank':
         let name = param?.trim();
 
-        console.log(name);
-
         if (!name) {
           this.client.say(channel, `@${tags.username} specify player.`)
 
@@ -64,7 +62,7 @@ class Bot {
         if (leader === null) {
           this.client.say(channel, `@${tags.username} player not found.`)
         } else {
-          this.client.say(channel, `@${tags.username} ${name} is rank ${leader.rank} with ${leader.rating} mmr (updated ${dayjs(Number(leader.lastUpdateTimestamp)).fromNow()}).`)
+          this.client.say(channel, `@${tags.username} Player ${leader.accountid} is rank ${leader.rank} with ${leader.rating} mmr (updated ${dayjs(Number(leader.lastUpdateTimestamp)).fromNow()}).`)
         }
 
         break;
